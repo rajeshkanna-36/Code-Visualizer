@@ -2,6 +2,10 @@
 
 **See your code think, step by step.**
 
+![AlgoViz Screenshot](https://image.thum.io/get/width/1200/crop/800/https://code-visualizer-livid.vercel.app/)
+
+### 🚀 Live Demo: [https://code-visualizer-livid.vercel.app/](https://code-visualizer-livid.vercel.app/)
+
 AlgoViz is a browser-based tool that lets you write code (JavaScript or Java), hit **Run**, and watch every single step of execution unfold visually — variables changing, arrays being sorted, loops iterating — all in real time with smooth animations.
 
 Built for students, teachers, and anyone who wants to *actually understand* what their code is doing under the hood.
