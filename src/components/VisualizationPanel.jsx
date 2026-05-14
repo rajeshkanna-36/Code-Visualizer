@@ -2,6 +2,11 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useVisualizer } from '../context/VisualizerContext';
 import ArrayVisualizer from './ArrayVisualizer';
+import StackVisualizer from './StackVisualizer';
+import QueueVisualizer from './QueueVisualizer';
+import LinkedListVisualizer from './LinkedListVisualizer';
+import TreeVisualizer from './TreeVisualizer';
+import GraphVisualizer from './GraphVisualizer';
 import MapVisualizer from './MapVisualizer';
 import VariableInspector from './VariableInspector';
 import StepDescription from './StepDescription';
@@ -31,9 +36,14 @@ export default function VisualizationPanel() {
     );
   }
 
-  const structures = snapshot?.structures || { arrays: {}, maps: {}, stacks: {}, scalars: {} };
-  const arrays = Object.entries(structures.arrays);
-  const maps = Object.entries(structures.maps);
+  const structures = snapshot?.structures || { arrays: {}, maps: {}, stacks: {}, queues: {}, linkedLists: {}, trees: {}, graphs: {}, scalars: {} };
+  const arrays = Object.entries(structures.arrays || {});
+  const stacks = Object.entries(structures.stacks || {});
+  const queues = Object.entries(structures.queues || {});
+  const linkedLists = Object.entries(structures.linkedLists || {});
+  const trees = Object.entries(structures.trees || {});
+  const graphs = Object.entries(structures.graphs || {});
+  const maps = Object.entries(structures.maps || {});
 
   return (
     <div className="viz-area">
@@ -51,6 +61,76 @@ export default function VisualizationPanel() {
               style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
             >
               <ArrayVisualizer name={name} array={arr} variables={snapshot?.variables || {}} changed={snapshot?.changed || []} />
+            </motion.div>
+          ))}
+
+          {/* Stacks */}
+          {stacks.map(([name, stack]) => (
+            <motion.div
+              key={`stack-${name}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+            >
+              <StackVisualizer name={name} stack={stack} />
+            </motion.div>
+          ))}
+
+          {/* Queues */}
+          {queues.map(([name, queue]) => (
+            <motion.div
+              key={`queue-${name}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+            >
+              <QueueVisualizer name={name} queue={queue} />
+            </motion.div>
+          ))}
+
+          {/* Linked Lists */}
+          {linkedLists.map(([name, nodes]) => (
+            <motion.div
+              key={`ll-${name}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+            >
+              <LinkedListVisualizer name={name} nodes={nodes} />
+            </motion.div>
+          ))}
+
+          {/* Trees */}
+          {trees.map(([name, tree]) => (
+            <motion.div
+              key={`tree-${name}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+            >
+              <TreeVisualizer name={name} tree={tree} />
+            </motion.div>
+          ))}
+
+          {/* Graphs */}
+          {graphs.map(([name, graph]) => (
+            <motion.div
+              key={`graph-${name}`}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+            >
+              <GraphVisualizer name={name} graph={graph} />
             </motion.div>
           ))}
 

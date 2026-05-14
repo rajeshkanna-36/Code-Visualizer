@@ -209,6 +209,184 @@ for (let i = 1; i < nums.length; i++) {
 
 console.log("Max subarray sum:", maxSum);`,
   },
+  {
+    id: 'stack-ops',
+    name: 'Stack Push/Pop',
+    category: 'Data Structures',
+    difficulty: 'easy',
+    code: `// Stack — Push and Pop operations
+let stack = [];
+
+// Push elements onto the stack
+stack.push(10);
+stack.push(20);
+stack.push(30);
+stack.push(40);
+stack.push(50);
+
+console.log("Stack after pushes:", stack);
+
+// Pop elements from the stack (LIFO)
+let popped1 = stack.pop();
+console.log("Popped:", popped1);
+
+let popped2 = stack.pop();
+console.log("Popped:", popped2);
+
+let popped3 = stack.pop();
+console.log("Popped:", popped3);
+
+console.log("Stack after pops:", stack);`,
+  },
+  {
+    id: 'queue-ops',
+    name: 'Queue Operations',
+    category: 'Data Structures',
+    difficulty: 'easy',
+    code: `// Queue — Enqueue and Dequeue operations
+let queue = [];
+
+// Enqueue elements (add to rear)
+queue.push(10);
+queue.push(20);
+queue.push(30);
+queue.push(40);
+queue.push(50);
+
+console.log("Queue after enqueues:", queue);
+
+// Dequeue elements (remove from front, FIFO)
+let first = queue.shift();
+console.log("Dequeued:", first);
+
+let second = queue.shift();
+console.log("Dequeued:", second);
+
+queue.push(60);
+console.log("Enqueued 60");
+
+let third = queue.shift();
+console.log("Dequeued:", third);
+
+console.log("Queue final:", queue);`,
+  },
+  {
+    id: 'linked-list',
+    name: 'Linked List Builder',
+    category: 'Data Structures',
+    difficulty: 'easy',
+    code: `// Linked List — Build and traverse
+// Create nodes
+let head = { val: 1, next: null };
+let second = { val: 2, next: null };
+let third = { val: 3, next: null };
+let fourth = { val: 4, next: null };
+let fifth = { val: 5, next: null };
+
+// Link them together
+head.next = second;
+second.next = third;
+third.next = fourth;
+fourth.next = fifth;
+
+// Traverse and print
+let current = head;
+let values = [];
+while (current !== null) {
+  values.push(current.val);
+  current = current.next;
+}
+
+console.log("Linked List:", values);`,
+  },
+  {
+    id: 'stack-balanced-parens',
+    name: 'Balanced Parentheses',
+    category: 'Data Structures',
+    difficulty: 'medium',
+    code: `// Check Balanced Parentheses using Stack
+let str = "((()))";
+let stack = [];
+let isValid = true;
+
+for (let i = 0; i < str.length; i++) {
+  let char = str[i];
+  if (char === '(') {
+    stack.push(char);
+    console.log("Push:", char);
+  } else if (char === ')') {
+    if (stack.length === 0) {
+      isValid = false;
+      console.log("No match for )");
+    } else {
+      let popped = stack.pop();
+      console.log("Pop:", popped, "matches", char);
+    }
+  }
+}
+
+if (stack.length !== 0) {
+  isValid = false;
+}
+console.log("Is valid:", isValid);`,
+  },
+  {
+    id: 'binary-tree',
+    name: 'Binary Search Tree',
+    category: 'Data Structures',
+    difficulty: 'medium',
+    code: `// Binary Search Tree — Build and visualize
+let root = { val: 8, left: null, right: null };
+
+// Insert nodes
+root.left = { val: 3, left: null, right: null };
+root.right = { val: 10, left: null, right: null };
+root.left.left = { val: 1, left: null, right: null };
+root.left.right = { val: 6, left: null, right: null };
+root.right.right = { val: 14, left: null, right: null };
+root.left.right.left = { val: 4, left: null, right: null };
+root.left.right.right = { val: 7, left: null, right: null };
+
+console.log("BST root:", root.val);
+console.log("Left subtree:", root.left.val);
+console.log("Right subtree:", root.right.val);`,
+  },
+  {
+    id: 'graph-bfs',
+    name: 'Graph BFS',
+    category: 'Data Structures',
+    difficulty: 'medium',
+    code: `// Graph — BFS Traversal using adjacency list
+let graph = {
+  0: [1, 2],
+  1: [0, 3],
+  2: [0, 4],
+  3: [1, 5],
+  4: [2, 5],
+  5: [3, 4]
+};
+
+let visited = new Set();
+let queue = [0];
+let order = [];
+
+while (queue.length > 0) {
+  let node = queue.shift();
+  if (!visited.has(node)) {
+    visited.add(node);
+    order.push(node);
+    console.log("Visit:", node);
+    let neighbors = graph[node];
+    for (let i = 0; i < neighbors.length; i++) {
+      if (!visited.has(neighbors[i])) {
+        queue.push(neighbors[i]);
+      }
+    }
+  }
+}
+
+console.log("BFS order:", order);`,
+  },
 ];
 
 export function getTemplate(id) {

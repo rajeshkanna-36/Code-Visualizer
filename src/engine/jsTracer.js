@@ -464,21 +464,104 @@ function getLineDescription(stmt, env) {
   }
 }
 
+// Detect linked list node: object with (val or value) and next
+function isLinkedListNode(obj) {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return false;
+  const hasVal = 'val' in obj || 'value' in obj;
+  const hasNext = 'next' in obj;
+  return hasVal && hasNext;
+}
+
+// Detect tree node: object with (val or value) and (left/right or children)
+function isTreeNode(obj) {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return false;
+  const hasVal = 'val' in obj || 'value' in obj;
+  const hasChildren = ('left' in obj || 'right' in obj) || 'children' in obj;
+  return hasVal && hasChildren;
+}
+
+// Detect graph: object with adjList or looks like adjacency list (keys map to arrays)
+function isGraphLike(obj) {
+  if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return false;
+  if (obj.__type) return false; // skip Map/Set wrappers
+  if ('adjList' in obj) return true;
+  // Check if all values are arrays (adjacency list pattern)
+  const entries = Object.entries(obj);
+  if (entries.length < 2) return false;
+  return entries.every(([k, v]) => Array.isArray(v));
+}
+
+// Traverse a linked list from head, return array of node values
+function traverseLinkedList(head, maxNodes = 50) {
+  const nodes = [];
+  let current = head;
+  const visited = new Set();
+  while (current && typeof current === 'object' && nodes.length < maxNodes) {
+    // Prevent cycles
+    if (visited.has(current)) {
+      nodes.push({ val: '∞ cycle', isCycle: true });
+      break;
+    }
+    visited.add(current);
+    const val = 'val' in current ? current.val : current.value;
+    nodes.push({ val: deepClone(val) });
+    current = current.next;
+  }
+  return nodes;
+}
+
+// Deep clone a tree node structure for snapshot
+function cloneTree(node, visited = new Set(), depth = 0) {
+  if (!node || typeof node !== 'object' || depth > 10) return null;
+  if (visited.has(node)) return null;
+  visited.add(node);
+  const val = 'val' in node ? node.val : node.value;
+  const result = { val: deepClone(val) };
+  if ('left' in node) result.left = cloneTree(node.left, visited, depth + 1);
+  if ('right' in node) result.right = cloneTree(node.right, visited, depth + 1);
+  if ('children' in node && Array.isArray(node.children)) {
+    result.children = node.children.map(c => cloneTree(c, visited, depth + 1)).filter(Boolean);
+  }
+  return result;
+}
+
+// Heuristic: classify arrays as stack/queue by variable name
+const STACK_NAMES = ['stack', 'stk', 'callStack', 'undoStack', 'redoStack', 'monoStack'];
+const QUEUE_NAMES = ['queue', 'q', 'bfsQueue', 'taskQueue', 'deque'];
+const GRAPH_NAMES = ['graph', 'adjList', 'adjacency', 'adj'];
+const TREE_NAMES = ['tree', 'root', 'bst'];
+
 function detectArraysAndStructures(env) {
   const vars = env.getAll();
-  const structures = { arrays: {}, maps: {}, stacks: {}, scalars: {} };
+  const structures = { arrays: {}, maps: {}, stacks: {}, queues: {}, linkedLists: {}, trees: {}, graphs: {}, scalars: {} };
 
   for (const [key, val] of Object.entries(vars)) {
     if (typeof val === 'function') continue;
     if (key.startsWith('__')) continue;
     if (Array.isArray(val)) {
-      structures.arrays[key] = deepClone(val);
+      const lowerKey = key.toLowerCase();
+      if (STACK_NAMES.some(s => lowerKey.includes(s.toLowerCase()))) {
+        structures.stacks[key] = deepClone(val);
+      } else if (QUEUE_NAMES.some(q => lowerKey.includes(q.toLowerCase()))) {
+        structures.queues[key] = deepClone(val);
+      } else {
+        structures.arrays[key] = deepClone(val);
+      }
     } else if (val instanceof Map) {
       structures.maps[key] = deepClone(val);
     } else if (val instanceof Set) {
       structures.maps[key] = deepClone(val);
+    } else if (isTreeNode(val)) {
+      structures.trees[key] = cloneTree(val);
+    } else if (isLinkedListNode(val)) {
+      structures.linkedLists[key] = traverseLinkedList(val);
     } else if (typeof val === 'object' && val !== null) {
-      structures.scalars[key] = deepClone(val);
+      const lowerKey = key.toLowerCase();
+      if (isGraphLike(val) || GRAPH_NAMES.some(g => lowerKey.includes(g.toLowerCase()))) {
+        structures.graphs[key] = deepClone(val);
+      } else {
+        structures.scalars[key] = deepClone(val);
+      }
     } else {
       structures.scalars[key] = val;
     }
